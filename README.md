@@ -2,6 +2,8 @@
 
 > **Internship-ready AI web application** — upload a resume, paste a job description, and receive a
 > comprehensive AI-powered analysis in seconds: match score, skill gaps, ATS optimization, interview prep, and more.
+## 🌐 Live Demo
+👉 [Click here to try the app](https://ai-resume-analyzer-k4lshdkjuaqmxyjmqntdek.streamlit.app)
 
 ---
 
@@ -10,7 +12,7 @@
 | Feature | Description |
 |---|---|
 | 📄 **PDF Extraction** | Automatic text extraction from any text-based PDF resume |
-| 🤖 **Gemini AI Analysis** | Google Gemini 1.5 Flash powers all intelligence |
+| 🤖 **Groq AI Analysis** | Llama 3.3 70B via Groq powers all intelligence |
 | 📊 **Match Score (0–100)** | Calibrated score with detailed verdict |
 | ⚠️ **Skill Gap Detection** | Side-by-side view of matched and missing skills |
 | 💡 **Improvement Suggestions** | 6–8 specific, actionable resume improvements |
@@ -32,7 +34,7 @@ ai-resume-analyzer/
 ├── utils/
 │   ├── __init__.py
 │   ├── pdf_extractor.py          # PDF text extraction (PyMuPDF + pdfplumber)
-│   ├── gemini_analyzer.py        # Gemini API integration & prompt engineering
+│   ├── gemini_analyzer.py        # Groq LLM integration & prompt engineering
 │   ├── visualizations.py         # Plotly charts: skill gap, heatmap, donut
 │   └── report_generator.py       # ReportLab PDF report builder
 ├── .streamlit/
@@ -49,12 +51,12 @@ ai-resume-analyzer/
 
 ### Prerequisites
 - Python 3.10 or higher
-- A free Google Gemini API key → https://aistudio.google.com/app/apikey
+- A free Groq API key → https://console.groq.com/keys
 
 ### Step 1 — Clone / Download
 
 ```bash
-git clone https://github.com/your-username/ai-resume-analyzer.git
+git clone https://github.com/Sandy-SHM/ai-resume-analyzer.git
 cd ai-resume-analyzer
 ```
 
@@ -72,23 +74,29 @@ source .venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
+pip install groq
 ```
 
-### Step 4 — Set your Gemini API key
+### Step 4 — Set your Groq API key
 
 **Option A — Streamlit secrets (recommended for deployment):**
 
 ```bash
 cp .streamlit/secrets.toml.example .streamlit/secrets.toml
-# Open .streamlit/secrets.toml and replace the placeholder with your real key
+# Open .streamlit/secrets.toml and add your key
+```
+
+Inside `secrets.toml`:
+```toml
+GROQ_API_KEY = "your-groq-api-key-here"
 ```
 
 **Option B — Environment variable (quick local dev):**
 
 ```bash
-export GOOGLE_API_KEY="your-key-here"      # macOS / Linux
-set GOOGLE_API_KEY=your-key-here           # Windows CMD
-$env:GOOGLE_API_KEY="your-key-here"        # Windows PowerShell
+export GROQ_API_KEY="your-key-here"      # macOS / Linux
+set GROQ_API_KEY=your-key-here           # Windows CMD
+$env:GROQ_API_KEY="your-key-here"        # Windows PowerShell
 ```
 
 ### Step 5 — Run the app
@@ -108,7 +116,7 @@ Open http://localhost:8501 in your browser. That's it!
 3. Select your repo and `app.py` as the entry point.
 4. Under **Advanced settings → Secrets**, add:
    ```toml
-   GOOGLE_API_KEY = "your-real-key"
+   GROQ_API_KEY = "your-real-key"
    ```
 5. Click **Deploy**. Done.
 
@@ -126,7 +134,7 @@ Open http://localhost:8501 in your browser. That's it!
          │ pdf_extractor │        │   gemini_analyzer    │
          │               │        │                      │
          │  PyMuPDF      │        │  Prompt engineering  │
-         │  pdfplumber   │        │  Gemini 1.5 Flash    │
+         │  pdfplumber   │        │  Llama 3.3 70B       │
          │  (fallback)   │        │  JSON parsing        │
          └───────────────┘        └─────────┬────────────┘
                                             │
@@ -144,13 +152,13 @@ Open http://localhost:8501 in your browser. That's it!
 
 ### How AI is used
 
-1. **Prompt Engineering** — A structured system prompt defines Gemini's role as a senior technical recruiter. A strict JSON schema is enforced in the prompt so output is always machine-parseable.
+1. **Prompt Engineering** — A structured system prompt defines the AI's role as a senior technical recruiter. A strict JSON schema is enforced so output is always machine-parseable.
 
-2. **Single-pass analysis** — Resume text (up to 6,000 chars) and job description (up to 3,000 chars) are sent in one Gemini call at `temperature=0.4` (reproducible yet slightly creative).
+2. **Single-pass analysis** — Resume text (up to 6,000 chars) and job description (up to 3,000 chars) are sent in one Groq API call at `temperature=0.4` (reproducible yet slightly creative).
 
-3. **Structured output** — Gemini returns a single JSON object containing 10 distinct analysis fields. Regex-based post-processing handles edge cases where the model accidentally adds markdown fences.
+3. **Structured output** — Llama 3.3 70B returns a single JSON object containing 10 distinct analysis fields. Regex-based post-processing handles edge cases where the model accidentally adds markdown fences.
 
-4. **Keyword intelligence** — The `keywords` field from Gemini drives the treemap heatmap, letting users see at a glance which JD terms appear in their resume.
+4. **Keyword intelligence** — The `keywords` field drives the treemap heatmap, letting users see at a glance which JD terms appear in their resume.
 
 ---
 
@@ -159,7 +167,7 @@ Open http://localhost:8501 in your browser. That's it!
 | Layer | Technology | Why |
 |---|---|---|
 | Frontend | Streamlit 1.35 | Rapid Python-native web UI |
-| AI / LLM | Google Gemini 1.5 Flash | Fast, affordable, 1M context window |
+| AI / LLM | Llama 3.3 70B via Groq | Fast, free, extremely capable |
 | PDF parsing | PyMuPDF + pdfplumber | Robust extraction for varied PDF types |
 | Visualisations | Plotly 5 | Interactive, dark-theme-friendly charts |
 | PDF reports | ReportLab | Production-quality PDF generation in Python |
@@ -168,16 +176,15 @@ Open http://localhost:8501 in your browser. That's it!
 
 ## 💼 Portfolio Description (for internship applications)
 
-> **AI Resume Analyzer** — *Python · Streamlit · Google Gemini · Plotly · ReportLab*
+> **AI Resume Analyzer** — *Python · Streamlit · Groq LLM · Plotly · ReportLab*
 >
 > Designed and built a full-stack AI web application that analyses resumes against job descriptions
-> using Google Gemini 1.5 Flash. The app extracts text from uploaded PDFs, sends a structured
+> using Llama 3.3 70B via Groq API. The app extracts text from uploaded PDFs, sends a structured
 > prompt to the LLM, and renders a rich analysis including a calibrated match score, skill gap
 > visualisations, ATS optimisation report, section-wise feedback, tailored project/certification
 > recommendations, and five likely interview questions. Users can download a professionally
 > formatted PDF report. Features interactive Plotly charts including a keyword treemap heatmap
-> and skill-coverage donut. Built with production-quality modular Python, Streamlit dark-theme
-> UI, and deployed on Streamlit Cloud.
+> and skill-coverage donut. Built with production-quality modular Python and Streamlit dark-theme UI.
 
 ---
 
@@ -186,12 +193,12 @@ Open http://localhost:8501 in your browser. That's it!
 Add these to the **Projects** section of your resume:
 
 ```
-• Built AI Resume Analyzer (Streamlit + Google Gemini 1.5 Flash) that parses PDF resumes,
+• Built AI Resume Analyzer (Streamlit + Groq LLM + Llama 3.3 70B) that parses PDF resumes,
   evaluates them against job descriptions, and returns match scores, skill gap charts, ATS
   reports, and interview prep questions via a structured LLM pipeline.
 
 • Engineered a multi-field prompt system with JSON schema enforcement, achieving consistent
-  structured output from Gemini across 10 analysis dimensions including ATS compatibility,
+  structured output from LLM across 10 analysis dimensions including ATS compatibility,
   section-wise feedback, and keyword heatmaps.
 
 • Implemented interactive Plotly visualisations (treemap, donut, horizontal bar charts) in a
@@ -223,7 +230,7 @@ MIT — free to use for personal and commercial projects.
 
 ## 🙏 Acknowledgements
 
-- Google Gemini AI — https://deepmind.google/gemini
+- Groq — https://console.groq.com
 - Streamlit — https://streamlit.io
 - PyMuPDF — https://pymupdf.readthedocs.io
 - ReportLab — https://reportlab.com
